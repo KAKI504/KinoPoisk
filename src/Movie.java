@@ -1,9 +1,8 @@
-import java.util.List;
 
 public class Movie {
-    private String name;
-    private int year;
-    private Director director;
+    private final String name;
+    private final int year;
+    private final Director director;
 
     public Movie(String name, int year, Director director) {
         this.name = name;
