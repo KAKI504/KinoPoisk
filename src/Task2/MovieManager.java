@@ -1,12 +1,12 @@
+package Task2;
+
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MovieManager {
     private List<Movie> movies;
@@ -18,12 +18,7 @@ public class MovieManager {
     private List<Movie> loadMoviesFromFile(String jsonFilePath) {
         List<Movie> movies = new ArrayList<>();
         File file = new File(jsonFilePath);
-
-        if (!file.exists()) {
-            System.out.println("Файл не найден: " + jsonFilePath);
-            return movies;
-        }
-
+        if (!file.exists()) return movies;
         try (Reader reader = new FileReader(jsonFilePath)) {
             Gson gson = new Gson();
             MovieList movieList = gson.fromJson(reader, MovieList.class);
@@ -43,13 +38,9 @@ public class MovieManager {
     }
 
     public List<Movie> searchMoviesByName(String searchText) {
-        List<Movie> result = new ArrayList<>();
-        for (Movie movie : movies) {
-            if (movie.getName().toLowerCase().contains(searchText.toLowerCase())) {
-                result.add(movie);
-            }
-        }
-        return result;
+        return movies.stream()
+                .filter(movie -> movie.getName().toLowerCase().contains(searchText.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     public void sortMoviesByYearAsc() {
@@ -70,6 +61,37 @@ public class MovieManager {
 
     public void sortMoviesByDirectorAsc() {
         movies.sort(Comparator.comparing(movie -> movie.getDirector().getFullName()));
+    }
+
+    public List<Movie> searchMoviesByDirector(String directorName) {
+        return movies.stream()
+                .filter(movie -> movie.getDirector().getFullName().equalsIgnoreCase(directorName))
+                .collect(Collectors.toList());
+    }
+
+    public List<Movie> searchMoviesByYear(int year) {
+        return movies.stream()
+                .filter(movie -> movie.getYear() == year)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getMoviesByActor(String actorName) {
+        return movies.stream()
+                .filter(movie -> movie.getCast().stream()
+                        .anyMatch(cast -> cast.getFullName().equalsIgnoreCase(actorName)))
+                .map(movie -> movie.getName() + " - " + movie.getCast().stream()
+                        .filter(cast -> cast.getFullName().equalsIgnoreCase(actorName))
+                        .map(Cast::getRole).findFirst().orElse("Без роли"))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getAllActorsWithRoles() {
+        return movies.stream()
+                .flatMap(movie -> movie.getCast().stream())
+                .distinct()
+                .sorted(Comparator.comparing(Cast::getFullName))
+                .map(cast -> cast.getFullName() + " - " + cast.getRole())
+                .collect(Collectors.toList());
     }
 
     private static class MovieList {
