@@ -1,4 +1,4 @@
-package Task2;
+package Task1;
 
 public class Cast {
     private final String fullName;
@@ -9,16 +9,8 @@ public class Cast {
         this.role = role;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
     @Override
     public String toString() {
-        return fullName + " - " + role;
+        return String.format("    %s - %s", fullName, role);
     }
 }

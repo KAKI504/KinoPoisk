@@ -45,14 +45,10 @@ public class MovieManager {
         }
     }
 
-    public List<Movie> searchMoviesByName(String searchText) {
-        List<Movie> result = new ArrayList<>();
-        for (Movie movie : movies) {
-            if (movie.getName().toLowerCase().contains(searchText.toLowerCase())) {
-                result.add(movie);
-            }
-        }
-        return result;
+    public void searchMoviesByName(String searchText) {
+        movies.stream()
+                .filter(movie -> movie.getName().toLowerCase().contains(searchText.toLowerCase()))
+                .forEach(System.out::println);
     }
 
     public void sortMoviesByYearAsc() {
